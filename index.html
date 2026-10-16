@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rezeptsammlung</title>
+<meta name="theme-color" content="#b4532a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Rezepte">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="stylesheet" href="app.css?v=13">
+<script>
+// Handy-Ansicht erzwingen – auch wenn der Browser im "Desktop-Modus" die viewport-Angabe ignoriert
+(function () {
+  var d = document.documentElement;
+  function fit() {
+    var w = window.innerWidth, sw = screen.width;
+    var touch = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+    var z = touch && sw && sw <= 820 && w > sw * 1.3 ? w / sw : 1;
+    d.style.zoom = z === 1 ? '' : z;
+    var eff = w / z;
+    d.classList.toggle('narrow', eff <= 820);
+    d.classList.toggle('mobile', eff <= 720);
+    d.classList.toggle('tiny', eff <= 480);
+  }
+  fit();
+  window.addEventListener('resize', fit);
+})();
+</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#/"><img src="icon.svg" alt=""><span>Rezeptsammlung</span></a>
+  <button class="sync-btn" id="syncBtn" type="button" hidden><svg><use href="#i-cloud"/></svg><span></span></button>
+  <button class="btn small primary install-btn" id="installBtn" hidden>📲 Installieren</button>
+  <nav class="nav" id="nav">
+    <a href="#/" data-nav="library"><svg><use href="#i-book"/></svg><span>Rezepte</span></a>
+    <a href="#/new" data-nav="new"><svg><use href="#i-plus"/></svg><span>Neu</span></a>
+    <a href="#/import" data-nav="import"><svg><use href="#i-import"/></svg><span>Import</span></a>
+    <a href="#/shopping" data-nav="shopping"><svg><use href="#i-cart"/></svg><span>Einkauf</span><b class="badge" id="shopBadge" hidden></b></a>
+    <a href="#/settings" data-nav="settings"><svg><use href="#i-gear"/></svg><span>Mehr</span></a>
+  </nav>
+</header>
+
+<main id="app" class="app"><div class="loading">Lade Rezepte …</div></main>
+
+<div id="timers" class="timers" hidden></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="lightbox" class="lightbox" hidden><img alt=""><button class="lb-close" aria-label="Schließen">✕</button></div>
+<div id="modal" class="modal" hidden><div class="modal-box"></div></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6.5A2.5 2.5 0 0 0 4 21.5 2.5 2.5 0 0 0 6.5 24H19M8 7h7"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-import" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v3h16v-3"/></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11h10.4L20 8H6.2M9 20h.01M17 20h.01"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 5h16l-6 8v6l-4-2v-4z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.6-9 9-9 9z"/></symbol>
+    <symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h.01M15 15h.01M15 9h.01M9 15h.01M12 12h.01"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></symbol>
+    <symbol id="i-chef" viewBox="0 0 24 24"><path d="M7 14a4 4 0 1 1 1.5-7.7A4 4 0 0 1 15.5 6 4 4 0 1 1 17 14v6H7z"/><path d="M7 17h10"/></symbol>
+    <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H4v-6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6h-3M7 14h10v7H7z"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v12M8 7l4-4 4 4M5 13v7h14v-7"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18h10.5a4 4 0 0 0 .6-8A6 6 0 0 0 6.6 9.1 4.5 4.5 0 0 0 7 18z"/></symbol>
+    <symbol id="i-pot" viewBox="0 0 24 24"><path d="M3 10h18M5 10v7a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-7M9 6c0-1 1-1 1-2M14 6c0-1 1-1 1-2"/></symbol>
+  </defs>
+</svg>
+
+<script>window.RZ_LOCAL = true;</script>
+<script src="app.js?v=13"></script>
+</body>
+</html>
