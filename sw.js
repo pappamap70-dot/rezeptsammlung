@@ -1,5 +1,5 @@
 // Service Worker der Rezeptsammlung: macht die App installierbar und startet sie auch ohne Verbindung zum NAS
-const SHELL_CACHE = 'rezepte-shell-v13';
+const SHELL_CACHE = 'rezepte-shell-v14';
 const IMG_CACHE = 'rezepte-img-v1';
 const SHELL = ['./', 'index.html', 'app.css', 'app.js', 'manifest.json', 'icon.svg', 'icon-192.png', 'icon-512.png'];
 

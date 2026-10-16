@@ -340,3 +340,4 @@ pre.code { background: var(--surface-2); padding: 12px; border-radius: 10px; ove
 .sync-info td { padding: 2px 12px 2px 0; vertical-align: top; }
 .backup-hint { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; border-color: #e0a94a; }
 .backup-hint span { flex: 1; min-width: 200px; }
+.app-version { text-align: center; color: var(--muted); font-size: .8rem; margin: 8px 0 0; }

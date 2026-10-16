@@ -16,6 +16,8 @@ const store = {
 };
 // Fassung ohne Server (z. B. auf GitHub Pages zum Weitergeben): alles bleibt nur auf dem Gerät, KI direkt beim Anbieter
 const LOCAL = window.RZ_LOCAL === true;
+// Versionsnummer = die Zahl aus „app.js?v=…“ in index.html (wird bei jedem Update erhöht)
+const APP_VERSION = ((document.currentScript && document.currentScript.src || '').match(/[?&]v=(\d+)/) || [])[1] || '?';
 const localImgs = new Map();   // Fotos auf dem Gerät ("local-….jpg"): unterwegs aufgenommen bzw. in der Fassung ohne Server
 const imgUrl = f => localImgs.get(f) || 'images/' + encodeURIComponent(f);
 const newId = () => [...crypto.getRandomValues(new Uint8Array(8))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -2139,6 +2141,7 @@ function renderSettings() {
     </div>
     <div class="card"><h2>Als App installieren</h2>${installInfo()}</div>
     ${s.auth_required ? `<div class="card"><button class="btn" id="logout">Abmelden</button></div>` : ''}
+    <p class="app-version">Rezeptsammlung · Version ${APP_VERSION} · ${LOCAL ? 'ohne Server' : 'NAS'}</p>
   </div>`;
   $('#theme').onchange = e => { store.set('theme', e.target.value); applyTheme(); };
   if ($('#syncNow')) $('#syncNow').onclick = () => runSync({ manual: true });
